@@ -3,11 +3,17 @@ import asyncio
 import logging
 import os
 import sys
+
+# Crucial for cloud runtimes like Render: ensure root workspace is discoverable
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+
 from telegram.ext import ApplicationBuilder
 
 from config import BOTTOKEN
 import database
 from handlers import common, auftraggeber, experte, bridge, admin, payments, miniapp, direct
+# ... keep the remainder of main.py exactly the same
+
 
 logging.basicConfig(
     format="%(asctime)s [%(levelname)s] %(name)s: %(message)s",
