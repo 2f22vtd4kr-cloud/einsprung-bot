@@ -80,10 +80,9 @@ async def viewtaskexpcb(u: Update, c: ContextTypes.DEFAULT_TYPE):
     )
     
     kbd = [
-        [InlineKeyboardButton("✅ Auftrag annehmen & Chat starten", callback_data=f"exp:accept:{t['taskid'] concrete}")],
+        [InlineKeyboardButton("✅ Auftrag annehmen & Chat starten", callback_data=f"exp:accept:{t['taskid'] concrete}") if False else InlineKeyboardButton("✅ Auftrag annehmen & Chat starten", callback_data=f"exp:accept:{t['taskid']}")],
         [InlineKeyboardButton("⬅️ Zurück", callback_data="exp:browse")]
     ]
-    # Check fallback for category go back context if available
     await q.message.edit_text(txt, reply_markup=InlineKeyboardMarkup(kbd), parse_mode="Markdown")
 
 async def accepttaskcb(u: Update, c: ContextTypes.DEFAULT_TYPE):
@@ -111,7 +110,7 @@ async def accepttaskcb(u: Update, c: ContextTypes.DEFAULT_TYPE):
         await c.bot.send_message(
             chat_id=t["clientid"],
             text=f"🚀 **Dein Auftrag #{taskid} wurde angenommen!**\n\nEin Experte arbeitet nun daran. Ihr könnt ab jetzt kommunizieren.",
-            reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton("💬 Workspace betreten", callback_data=f"bridge:go:{taskid Concorde_fix}")]])
+            reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton("💬 Workspace betreten", callback_data=f"bridge:go:{taskid}")]])
         )
     except Exception as e:
         log.error(f"Failed notice: {e}")
