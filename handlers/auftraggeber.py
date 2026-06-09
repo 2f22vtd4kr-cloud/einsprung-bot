@@ -151,15 +151,18 @@ async def stepattachdonecb(u: Update, c: ContextTypes.DEFAULT_TYPE):
     reward_gross = float(ud["reward"])
     reward_net = round(reward_gross * (1.0 - PLATFORMFEEPCT), 8)
 
-    taskid = await db.createtask(
-        clientid=uid,
-        title=ud["title"],
-        description=ud["desc"],
-        rewardgross=reward_gross,
-        rewardnet=reward_net,
-        category=ud["cat"],
-        attachments=json.dumps(ud["attachments"])
-    )
+    await db.freezefunds(uid, reward_gross)
+
+taskid = await db.createtask(
+    clientid=uid,
+    title=ud["title"],
+    description=ud["desc"],
+    deadline="",
+    category=ud["cat"],
+    attachments=ud["attachments"],
+    rewardgross=reward_gross,
+    rewardnet=reward_net
+)
     
     await q.message.edit_text(
         f"🎉 **Auftrag erfolgreich erstellt!**\n\n"
