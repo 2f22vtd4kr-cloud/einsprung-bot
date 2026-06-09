@@ -53,20 +53,19 @@ async def run_webhook(app):
 
     # Required initialization step for python-telegram-bot v21+
     await app.initialize()
-
-    await app.bot.set_webhook(
-        url=f"{url}/webhook",
-        allowed_updates=["message", "callback_query", "pre_checkout_query"]
-    )
-    log.info(f"Webhook set to {url}/webhook")
     
+    # We remove the manual app.bot.set_webhook line here to prevent the duplicate API call!
     await app.start()
+    
+    log.info(f"Starting webhook listening on port {port} targeting {url}/webhook")
     await app.updater.start_webhook(
         listen="0.0.0.0",
         port=port,
         url_path="webhook",
-        webhook_url=f"{url}/webhook"
+        webhook_url=f"{url}/webhook",
+        allowed_updates=["message", "callback_query", "pre_checkout_query"]
     )
+
 
 def main():
     app = buildapp()
