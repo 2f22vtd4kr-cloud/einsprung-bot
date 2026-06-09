@@ -25,6 +25,11 @@ async def postinit(application):
     asyncio.create_task(payments.pollinvoices(application))
     log.info("Ein Sprung 🐸 started successfully.")
 
+logging.basicConfig(
+    format="%(asctime)s [%(levelname)s] %(name)s: %(message)s",
+    level=logging.DEBUG, # Change from INFO to DEBUG
+)
+
 def buildapp():
     if not BOTTOKEN:
         raise RuntimeError("BOTTOKEN ist nicht gesetzt.")
