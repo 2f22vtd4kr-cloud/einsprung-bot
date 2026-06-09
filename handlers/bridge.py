@@ -62,7 +62,7 @@ async def proxymessage(u: Update, c: ContextTypes.DEFAULT_TYPE):
     try:
         if msg.text:
             await c.bot.send_message(chat_id=target_chat_id, text=prefix + msg.text, parse_mode="Markdown")
-            await msg.react("🕊️")
+            pass
     except Exception as e:
         log.error(f"Error handling proxy bridge dispatch routing execution link: {e}")
 
