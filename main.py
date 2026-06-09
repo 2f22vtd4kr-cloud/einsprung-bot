@@ -43,7 +43,7 @@ def buildapp():
     return app
 
 async def run_webhook(app):
-    """Run with webhooks (recommended for production)."""
+    """Run with webhooks safely bypassing unnecessary set_webhook rate-limits."""
     port = int(os.getenv("PORT", 8443))
     url = os.getenv("WEBHOOK_URL")  # e.g. https://einsprung-bot.onrender.com
     
@@ -51,19 +51,28 @@ async def run_webhook(app):
         log.error("WEBHOOK_URL environment variable is required for webhook mode.")
         sys.exit(1)
 
-    # Required initialization step for python-telegram-bot v21+
-    await app.initialize()
-    
-    # We remove the manual app.bot.set_webhook line here to prevent the duplicate API call!
+    target_webhook_url = f"{url}/webhook"
+
+    # --- SAFE CHECK TO PREVENT FLOOD LIMITS ---
+    try:
+        current_info = await app.bot.get_webhook_info()
+        if current_info.url == target_webhook_url:
+            log.info("✅ Webhook URL already configured correctly. Skipping set_webhook endpoint.")
+        else:
+            log.info(f"🔄 Updating Webhook URL to: {target_webhook_url}")
+            await app.bot.set_webhook(
+                url=target_webhook_url,
+                allowed_updates=["message", "callback_query", "pre_checkout_query"]
+            )
+    except Exception as e:
+        log.warning(f"Could not verify or set webhook safely: {e}. Attempting standard run.")
+
     await app.start()
-    
-    log.info(f"Starting webhook listening on port {port} targeting {url}/webhook")
     await app.updater.start_webhook(
         listen="0.0.0.0",
         port=port,
         url_path="webhook",
-        webhook_url=f"{url}/webhook",
-        allowed_updates=["message", "callback_query", "pre_checkout_query"]
+        webhook_url=target_webhook_url
     )
 
 
