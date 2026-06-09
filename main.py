@@ -55,16 +55,21 @@ async def run_webhook(app):
         log.error("WEBHOOK_URL is required.")
         sys.exit(1)
 
-    # 1. Initialize the app first!
+    # Use 'initialize' before anything else
     await app.initialize()
-    
-    # 2. Set webhook
-    await app.bot.set_webhook(
-        url=f"{url}/webhook",
-        allowed_updates=["message", "callback_query", "pre_checkout_query"]
-    )
-    
-    # 3. Start the application and the updater
+
+    # ONLY set the webhook if you are sure you haven't just done it
+    # Telegram remembers the webhook; you don't need to push it every boot.
+    # To be safe, add a try/except or simply comment this out after the first successful run.
+    try:
+        await app.bot.set_webhook(
+            url=f"{url}/webhook",
+            allowed_updates=["message", "callback_query", "pre_checkout_query"]
+        )
+        log.info(f"Webhook successfully set to {url}/webhook")
+    except Exception as e:
+        log.warning(f"Skipping set_webhook or already set: {e}")
+
     await app.start()
     await app.updater.start_webhook(
         listen="0.0.0.0",
@@ -73,9 +78,9 @@ async def run_webhook(app):
         webhook_url=f"{url}/webhook"
     )
     
-    # 4. CRITICAL: Keep the process alive by waiting for an event
-    log.info("Webhook server is running...")
+    # KEEP ALIVE
     await asyncio.Event().wait()
+
 
 async def main():
     app = buildapp()
