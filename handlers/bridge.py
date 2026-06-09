@@ -76,13 +76,26 @@ async def dealreleasecb(u: Update, c: ContextTypes.DEFAULT_TYPE):
         await q.answer("❌ Aktion nicht möglich.", show_alert=True)
         return
         
-    # Fixed: Uses your actual database functional transaction architecture to approve payouts
-    success = await db.completetask(taskid)
-    if not success:
-        await q.message.edit_text("❌ Fehler bei der Transaktionsabwicklung.")
+    try:
+        # 1. Execute the real atomic database ledger transfer to credit the executor
+        await db.releasefundstoexecutor(
+            clientid=task["clientid"],
+            executorid=task["executorid"],
+            gross=task["rewardgross"],
+            net=task["rewardnet"]
+        )
+        
+        # 2. Update the task status explicitly so it leaves the active queue
+        await db.settaskstatus(taskid, "completed")
+        await db.setsessionstatus(taskid, "closed")
+        
+    except Exception as e:
+        log.error(f"Financial ledger execution crash on task #{taskid}: {e}")
+        await q.message.edit_text("❌ Interner Fehler bei der Transaktionsabwicklung.")
         return
         
     await q.message.edit_text("🌟 Auftrag erfolgreich abgeschlossen und Guthaben freigegeben!")
+    # ... (rest of notification logic stays the same)
     
     try:
         await c.bot.send_message(
