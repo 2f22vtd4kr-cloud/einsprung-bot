@@ -1,8 +1,8 @@
 import logging
 import json
 from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup
-from telegram.ext import ContextTypes, ConversationHandler, CommandHandler, CallbackQueryHandler, MessageHandler, filters
-from config import MAXATTACHMENTTOTALMB, PLATFORMFEEPCT
+from telegram.ext import ContextTypes, ConversationHandler, CallbackQueryHandler, MessageHandler, filters
+from config import PLATFORMFEEPCT
 import database as db
 
 log = logging.getLogger("einsprung.handlers.auftraggeber")
@@ -72,7 +72,7 @@ async def stepcategorycb(u: Update, c: ContextTypes.DEFAULT_TYPE):
     
     await q.message.edit_text(
         "💰 **Schritt 4: Belohnung (USDT)**\n\nWie viel USDT möchtest du zahlen?\n"
-        "(Zahl eingeben, z.B. 25. Dein Wallet-Guthaben muss gedeckt sein).",
+        "(Zahl eingeben, z.B. 25).",
         reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton("❌ Abbrechen", callback_data="wiz:cancel")]])
     )
     return WIZ_REWARD
