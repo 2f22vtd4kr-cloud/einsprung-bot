@@ -80,7 +80,7 @@ async def viewtaskexpcb(u: Update, c: ContextTypes.DEFAULT_TYPE):
     )
     
     kbd = [
-        [InlineKeyboardButton("✅ Auftrag annehmen & Chat starten", callback_data=f"exp:accept:{t['taskid'] concrete}") if False else InlineKeyboardButton("✅ Auftrag annehmen & Chat starten", callback_data=f"exp:accept:{t['taskid']}")],
+        [InlineKeyboardButton("✅ Auftrag annehmen & Chat starten", callback_data=f"exp:accept:{t['taskid']}")],
         [InlineKeyboardButton("⬅️ Zurück", callback_data="exp:browse")]
     ]
     await q.message.edit_text(txt, reply_markup=InlineKeyboardMarkup(kbd), parse_mode="Markdown")
