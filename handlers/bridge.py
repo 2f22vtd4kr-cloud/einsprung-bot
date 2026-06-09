@@ -1,6 +1,7 @@
 import logging
 from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup
-from telegram.ext import ContextTypes, CallbackQueryHandler, MessageHandler, filters
+from telegram.ext import ContextTypes, CallbackQueryHandler, MessageHandler
+from telegram.ext import filters  # Explicitly import the filters module
 import database as db
 
 log = logging.getLogger("einsprung.handlers.bridge")
