@@ -14,7 +14,7 @@ def reconcile(fix=False):
 
     # Expected fees from tasks
     cur.execute("""
-        SELECT COALESCE(SUM(rewardgross - rewardnet), 0.0) as expected_fees,
+        SELECT COALESCE(SUM(ROUND(rewardgross - rewardnet, 8)), 0.0) as expected_fees,
                COUNT(*) as task_count
         FROM tasks 
         WHERE status IN ('completed')
