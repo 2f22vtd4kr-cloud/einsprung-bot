@@ -12,8 +12,6 @@ from telegram.ext import ApplicationBuilder
 from config import BOTTOKEN
 import database
 from handlers import common, auftraggeber, experte, bridge, admin, payments, miniapp, direct
-# ... keep the remainder of main.py exactly the same
-
 
 logging.basicConfig(
     format="%(asctime)s [%(levelname)s] %(name)s: %(message)s",
@@ -47,11 +45,14 @@ def buildapp():
 async def run_webhook(app):
     """Run with webhooks (recommended for production)."""
     port = int(os.getenv("PORT", 8443))
-    url = os.getenv("WEBHOOK_URL")  # e.g. https://yourapp.railway.app
+    url = os.getenv("WEBHOOK_URL")  # e.g. https://einsprung-bot.onrender.com
     
     if not url:
         log.error("WEBHOOK_URL environment variable is required for webhook mode.")
         sys.exit(1)
+
+    # Required initialization step for python-telegram-bot v21+
+    await app.initialize()
 
     await app.bot.set_webhook(
         url=f"{url}/webhook",
@@ -71,10 +72,10 @@ def main():
     app = buildapp()
     
     # Choose mode based on environment
-    if os.getenv("MODE") == "webhook":
+    if os.getenv("WEBHOOK_MODE", "false").lower() == "true" or os.getenv("WEBHOOK_URL"):
         asyncio.run(run_webhook(app))
     else:
-        # Default: Polling (good for local testing)
+        log.info("Starting bot in local polling mode...")
         app.run_polling(allowed_updates=["message", "callback_query", "pre_checkout_query"])
 
 if __name__ == "__main__":
