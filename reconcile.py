@@ -12,13 +12,14 @@ def reconcile(fix=False):
     conn.row_factory = sqlite3.Row
     cur = conn.cursor()
 
-    # Expected fees from tasks
+      # Expected fees from tasks (Updated with row-level ROUND to match database.py tracking)
     cur.execute("""
-        SELECT COALESCE(SUM(rewardgross - rewardnet), 0.0) as expected_fees,
+        SELECT COALESCE(SUM(ROUND(rewardgross - rewardnet, 8)), 0.0) as expected_fees,
                COUNT(*) as task_count
         FROM tasks 
         WHERE status IN ('completed')
     """)
+
     row = cur.fetchone()
     expected = round(row["expected_fees"], 8)
     task_count = row["task_count"]
