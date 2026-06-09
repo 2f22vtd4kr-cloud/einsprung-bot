@@ -117,8 +117,10 @@ async def stepreward(u: Update, c: ContextTypes.DEFAULT_TYPE):
 async def stepattach(u: Update, c: ContextTypes.DEFAULT_TYPE):
     msg = u.message
     file_id = None
-    if msg.document: file_id = msg.document.file_id
-    elif msg.photo: file_id = msg.photo[-1].file_id
+    if msg.document: 
+        file_id = msg.document.file_id
+    elif msg.photo: 
+        file_id = msg.photo[-1].file_id
         
     if not file_id:
         await msg.reply_text("⚠️ Sende ein Dokument oder ein Bild als Anhang:")
