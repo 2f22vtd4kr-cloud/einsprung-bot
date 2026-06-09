@@ -77,14 +77,21 @@ async def run_webhook(app):
 
 async def main():
     app = buildapp()
+
     if os.getenv("MODE") == "webhook":
         await run_webhook(app)
-    else:
-        # For polling, you also need to initialize
-        await app.initialize()
-        await app.start()
-        await app.updater.start_polling()
+        return
+
+    await app.initialize()
+    await app.start()
+    await app.updater.start_polling(drop_pending_updates=True)
+
+    try:
         await asyncio.Event().wait()
+    finally:
+        await app.updater.stop()
+        await app.stop()
+        await app.shutdown()
 
 if __name__ == "__main__":
     # Correctly run the async main function
