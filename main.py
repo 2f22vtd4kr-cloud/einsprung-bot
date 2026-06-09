@@ -74,11 +74,21 @@ async def run_webhook(app):
         url_path="webhook",
         webhook_url=target_webhook_url
     )
-
-
-def main():
-    app = buildapp()
     
+async def main():
+    app = buildapp()
+    # ... your webhook setup logic ...
+    
+    # IMPORTANT: Use run_polling() OR start the webhook server and keep it alive
+    # If you are using webhooks, you need to keep the event loop running:
+    await app.initialize()
+    await app.start()
+    await app.updater.start_webhook(...)
+    
+    # This block prevents the script from exiting immediately
+    log.info("Bot is running...")
+    await asyncio.Event().wait() 
+
     # Choose mode based on environment
     if os.getenv("WEBHOOK_MODE", "false").lower() == "true" or os.getenv("WEBHOOK_URL"):
         asyncio.run(run_webhook(app))
