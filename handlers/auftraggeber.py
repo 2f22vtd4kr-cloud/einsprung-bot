@@ -1,14 +1,4 @@
-taskid = int(taskid)
-    
-    t = await db.gettask(taskid)
-    if not t:
-        await q.message.edit_text("❌ Auftrag nicht gefunden.")
-        return
-        
-    txt = (
-        f"📊 **Auftragsdetails `#{t['taskid']}`**\n\n"
-        f"**Status:** {t['status'].upper()}\n"
-        f"**Titel:** {t['title']}\n"
+f"**Titel:** {t['title']}\n"
         f"**Kategorie:** {t['category']}\n"
         f"**Budget:** {t['rewardgross']} USDT\n\n"
         f"📝 **Beschreibung:**\n{t['description']}"
