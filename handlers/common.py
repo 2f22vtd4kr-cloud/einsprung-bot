@@ -1,10 +1,9 @@
 import logging
 from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup
 from telegram.ext import ContextTypes, ConversationHandler
-from config import HELPDESKLINK
+from config import BOTUSERNAME
 
-# Fix: Corrected name logging variable
-log = logging.getLogger(__name__)
+log = logging.getLogger("einsprung.handlers.common")
 
 async def cmdstart(u: Update, c: ContextTypes.DEFAULT_TYPE):
     """Handles the /start command and displays the main menu."""
@@ -12,17 +11,16 @@ async def cmdstart(u: Update, c: ContextTypes.DEFAULT_TYPE):
     log.info(f"User {uid} started the bot.")
     
     txt = (
-        "👋 **Willkommen auf dem Marktplatz!**\n\n"
-        "Hier kannst du entweder als **Auftraggeber** Aufgaben erstellen oder als "
-        "**Experte** Aufträge annehmen und Geld verdienen.\n\n"
-        "Bitte wähle deine Rolle aus dem Menü unten:"
+        "👋 **Willkommen bei Ein Sprung 🐸**\n\n"
+        "Hier kannst du entweder als Auftraggeber akademische Aufgaben ausschreiben oder "
+        "als Experte Aufträge annehmen und USDT verdienen.\n\n"
+        "Bitte wähle deine Option aus dem Menü unten:"
     )
     
     kbd = [
         [InlineKeyboardButton("💼 Auftraggeber-Menü", callback_data="menu:ag")],
         [InlineKeyboardButton("🎓 Experten-Menü", callback_data="menu:exp")],
-        [InlineKeyboardButton("💳 Geldbörse / Wallet", callback_data="menu:wallet")],
-        [InlineKeyboardButton("❓ Hilfe & Support", url=HELPDESKLINK)]
+        [InlineKeyboardButton("💳 Geldbörse / Wallet", callback_data="menu:wallet")]
     ]
     
     if u.message:
@@ -40,6 +38,12 @@ async def cmdcancel(u: Update, c: ContextTypes.DEFAULT_TYPE):
         await u.effective_message.reply_text("❌ Vorgang abgebrochen.")
     
     c.user_data.clear()
-    # Reset back to start menu cleanly
     await cmdstart(u, c)
     return ConversationHandler.END
+
+def register(app):
+    """Registers basic structural components."""
+    from telegram.ext import CommandHandler, CallbackQueryHandler
+    app.add_handler(CommandHandler("start", cmdstart))
+    app.add_handler(CommandHandler("cancel", cmdcancel))
+    app.add_handler(CallbackQueryHandler(cmdstart, pattern=r"^menu:start$"))
