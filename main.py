@@ -1,3 +1,10 @@
+import os
+import sys
+# Ensure the repository root (directory containing main.py) is on sys.path so local packages can be imported
+ROOT_DIR = os.path.dirname(os.path.abspath(__file__))
+if ROOT_DIR not in sys.path:
+    sys.path.insert(0, ROOT_DIR)
+
 """Bot bootstrap: init DB, register handlers, support polling + webhooks."""
 import asyncio
 import logging
